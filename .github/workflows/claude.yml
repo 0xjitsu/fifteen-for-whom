@@ -26,7 +26,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install ffmpeg
+        run: sudo apt-get update -y && sudo apt-get install -y ffmpeg
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 80"
+          claude_args: '--max-turns 120 --allowedTools "Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(curl:*),Bash(python3:*),Bash(pip:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(sudo apt-get:*),Bash(git:*),Bash(ls:*),Bash(mkdir:*),Bash(cp:*),Bash(mv:*),Bash(rm:*),Bash(cat:*),Bash(bash:*),Bash(chmod:*),Bash(du:*),Bash(stat:*),Bash(test:*),Bash(gh pr create:*),Edit,Write,Read,Glob,Grep"'
