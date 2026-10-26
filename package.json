@@ -1,0 +1,10 @@
+{
+  "name": "fifteen-for-whom",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "echo 'TODO: real lint (set up by builder)'",
+    "build": "mkdir -p dist && cp -r public/. dist/",
+    "smoke": "test -f dist/index.html"
+  }
+}
