@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>15 minutes, but for whom?</title>
+    <meta name="description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 5, 10 and 15 minutes? A free civic map, starting with BGC, Taguig." />
+    <meta name="theme-color" content="#14202b" />
+    <link rel="canonical" href="https://fifteen-for-whom.vercel.app/" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%2314a3a8'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='2.5'/%3E%3C/svg%3E" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="15 minutes, but for whom?" />
+    <meta property="og:url" content="https://fifteen-for-whom.vercel.app/" />
+    <meta property="og:title" content="15 minutes, but for whom?" />
+    <meta property="og:description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 15 minutes? Click a point in BGC and see." />
+    <meta property="og:image" content="https://fifteen-for-whom.vercel.app/og/preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Walking isochrones growing for a child, a pregnant woman, an elderly person and a newcomer in BGC" />
+    <meta property="og:video" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta property="og:video:secure_url" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1200" />
+    <meta property="og:video:height" content="630" />
+
+    <meta name="twitter:card" content="player" />
+    <meta name="twitter:title" content="15 minutes, but for whom?" />
+    <meta name="twitter:description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 15 minutes?" />
+    <meta name="twitter:image" content="https://fifteen-for-whom.vercel.app/og/preview.png" />
+    <meta name="twitter:player" content="https://fifteen-for-whom.vercel.app/og/player.html" />
+    <meta name="twitter:player:width" content="1200" />
+    <meta name="twitter:player:height" content="630" />
+    <meta name="twitter:player:stream" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta name="twitter:player:stream:content_type" content="video/mp4" />
+  </head>
+  <body>
+    <div id="map" aria-label="Map of walking reach"></div>
+    <aside id="panel">
+      <header>
+        <h1>15 minutes, but for whom?</h1>
+        <p class="sub" id="area-name"></p>
+      </header>
+      <p id="hint" class="hint">Tap or click anywhere on the map to start from there.</p>
+      <p id="explain" class="explain" aria-live="polite"></p>
+
+      <section aria-label="Who is walking">
+        <h2>Who is walking</h2>
+        <ul id="legend" class="legend"></ul>
+        <p class="bands">Line strength: <b>5</b> min (solid) · <b>10</b> min · <b>15</b> min (faint)</p>
+      </section>
+
+      <section aria-label="Conditions">
+        <h2>Conditions</h2>
+        <label><input type="checkbox" id="c-heat" /> Heat (high heat index)</label>
+        <label><input type="checkbox" id="c-rain" /> Rain</label>
+        <label class="sub-opt"><input type="checkbox" id="c-avoid" /> …and avoid uncovered streets</label>
+        <label><input type="checkbox" id="c-slopes" /> Slopes (Tobler penalty)</label>
+        <label><input type="checkbox" id="c-lifts" /> Broken lifts (no stairs or footbridges)</label>
+      </section>
+
+      <footer>
+        <span>MIT licensed</span> ·
+        <span>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a></span> ·
+        <span>Tiles <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © OpenMapTiles</span> ·
+        <!-- TODO: placeholder until the donation account is chosen -->
+        <a href="https://github.com/sponsors/0xjitsu" target="_blank" rel="noopener">Donate</a> ·
+        <a href="https://github.com/0xjitsu/fifteen-for-whom" target="_blank" rel="noopener">Source &amp; method</a>
+      </footer>
+    </aside>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
