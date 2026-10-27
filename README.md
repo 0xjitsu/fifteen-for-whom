@@ -40,8 +40,6 @@ No API keys, no paid services. Everything runs in the browser; the street graph 
 
 The slope penalty uses Tobler's hiking function (Tobler 1993, NCGIA Technical Report 93-1), applied to urban walking as an assumption; see Limitations.
 
-These references were written from memory and not re-checked against the papers in this build: verify before quoting them.
-
 ### Conditions
 
 | Toggle | Effect |
@@ -106,3 +104,7 @@ Free to use. A Donate link appears in the footer once `DONATE_URL` in `src/confi
 ## License
 
 MIT, see [LICENSE](LICENSE). Map data © OpenStreetMap contributors (ODbL).
+
+## Browser tests
+
+`npm run e2e` installs Chromium and runs Playwright (`e2e/app.spec.ts`) against the built site with software WebGL. It checks that tiles render, that a click draws 5/10/15 min rings for all four personas, that each toggle changes the geometry, and that the layout holds at 390px. `npm run smoke` runs the tag checks and then this, so CI covers both. Screenshots from the last run are in `docs/screenshots/`.

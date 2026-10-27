@@ -1,5 +1,6 @@
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import './style.css'
 import areas from './areas.json'
 import { DONATE_URL } from './config'
@@ -23,6 +24,10 @@ interface Area {
   graph: string
   start: [number, number]
 }
+
+// MapLibre 6 resolves its worker relative to the bundled chunk, which breaks after Vite
+// bundling ("Worker failed to load"). Point it at the worker file as a hashed static asset.
+maplibregl.setWorkerUrl(workerUrl)
 
 const areaId = new URLSearchParams(location.search).get('area') ?? 'bgc'
 const area = (areas as unknown as Record<string, Area>)[areaId] ?? (areas as unknown as Record<string, Area>).bgc
@@ -77,7 +82,7 @@ const marker = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLn
 map.once('idle', () => { $('loading').hidden = true })
 map.on('error', (ev) => {
   console.error('map error', ev.error)
-  $('loading').textContent = 'The map could not load. Check your connection and reload.'
+  if (!map.loaded()) $('loading').textContent = 'The map could not load. Check your connection and reload.'
 })
 const emptyFC = { type: 'FeatureCollection' as const, features: [] }
 

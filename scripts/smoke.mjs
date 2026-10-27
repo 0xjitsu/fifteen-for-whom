@@ -47,7 +47,8 @@ for (const [, name] of tags) {
 
 // footer
 if (!html.includes('OpenStreetMap contributors')) fail('footer: missing "© OpenStreetMap contributors"')
-if (!html.includes('https://github.com/sponsors/0xjitsu')) fail('footer: missing donation link')
+// the Donate link is hidden until DONATE_URL is set in src/config.ts, and no broken sponsors link may ship
+if (html.includes('github.com/sponsors')) fail('footer: broken sponsors link shipped')
 if (!/MIT/.test(html)) fail('footer: missing MIT licence mention')
 
 // built assets

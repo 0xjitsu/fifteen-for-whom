@@ -10,11 +10,13 @@
     "preview-video": "node scripts/render-preview.mjs",
     "lint": "tsc --noEmit && eslint .",
     "build": "vite build",
-    "smoke": "node scripts/smoke.mjs"
+    "e2e": "playwright install --with-deps chromium && playwright test",
+    "smoke": "node scripts/smoke.mjs && npm run e2e"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@napi-rs/canvas": "^1.0.13",
+    "@playwright/test": "^1.64.1",
     "eslint": "^9.39.5",
     "maplibre-gl": "^6.16.0",
     "typescript": "~6.0.3",
