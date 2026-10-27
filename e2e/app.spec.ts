@@ -56,27 +56,7 @@ async function clickMap(page: Page, dx = 30, dy = -40) {
   await expect(page.locator('#explain')).toContainText('In 15 minutes')
 }
 
-async function shootEachPersona(page: Page, prefix: string) {
-  for (const p of PERSONAS) {
-    for (const q of PERSONAS) await page.locator(`input[data-p="${q}"]`).setChecked(q === p)
-    await page.waitForFunction(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (window as any).__map.areTilesLoaded()
-    })
-    await page.screenshot({ path: `${SHOTS}/${prefix}-${p}.png` })
-  }
-}
-
-test('tiles render, then a click draws 5/10/15 min rings for all 4 personas', async ({ page }) => {
-  await openMap(page)
-  const rendered = await page.evaluate(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const m = (window as any).__map
-    return m.queryRenderedFeatures().filter((f: { source: string }) => !f.source.startsWith('reach-')).length
-  })
-  expect(rendered, 'vector tiles should render features').toBeGreaterThan(50)
-
-  await clickMap(page)
+async function expectRings(page: Page) {
   const r = await reach(page)
   for (const p of PERSONAS) {
     for (const b of BANDS) {
@@ -99,6 +79,32 @@ test('tiles render, then a click draws 5/10/15 min rings for all 4 personas', as
   )
   expect(layers.length).toBe(12)
   expect(layers.every(Boolean)).toBe(true)
+}
+
+async function shootEachPersona(page: Page, prefix: string) {
+  for (const p of PERSONAS) {
+    for (const q of PERSONAS) await page.locator(`input[data-p="${q}"]`).setChecked(q === p)
+    // wait until this persona's rings are actually painted, not just tiles loaded
+    await page.waitForFunction((id) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const m = (window as any).__map
+      return m.areTilesLoaded() && m.queryRenderedFeatures({ layers: [`reach-${id}-5`, `reach-${id}-10`, `reach-${id}-15`] }).length > 0
+    }, p)
+    await page.screenshot({ path: `${SHOTS}/${prefix}-${p}.png` })
+  }
+}
+
+test('tiles render, then a click draws 5/10/15 min rings for all 4 personas', async ({ page }) => {
+  await openMap(page)
+  const rendered = await page.evaluate(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const m = (window as any).__map
+    return m.queryRenderedFeatures().filter((f: { source: string }) => !f.source.startsWith('reach-')).length
+  })
+  expect(rendered, 'vector tiles should render features').toBeGreaterThan(50)
+
+  await clickMap(page)
+  await expectRings(page)
 
   await shootEachPersona(page, 'desktop')
 })
@@ -158,6 +164,7 @@ test('layout holds at 390px wide', async ({ browser }) => {
   expect(box!.x).toBeGreaterThanOrEqual(0)
   expect(box!.x + box!.width).toBeLessThanOrEqual(390)
   await clickMap(page, 0, -150)
+  await expectRings(page)
   await shootEachPersona(page, 'mobile')
   await ctx.close()
 })
