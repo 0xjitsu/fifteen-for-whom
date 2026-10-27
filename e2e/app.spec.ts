@@ -53,7 +53,7 @@ async function clickMap(page: Page, dx = 30, dy = -40) {
     [dx, dy],
   )
   await page.mouse.click(x, y)
-  await expect(page.locator('#explain')).toContainText('In 15 minutes')
+  await expect(page.locator('#explain')).toContainText('Share of the streets')
 }
 
 async function expectRings(page: Page) {
@@ -142,7 +142,9 @@ test('page copy, donate link and focus outline', async ({ page }) => {
   await expect(page.getByText('Hot day', { exact: true })).toBeVisible()
   await expect(page.getByText('Hills and ramps', { exact: true })).toBeVisible()
   await expect(page.getByText('5 / 10 / 15 min')).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Limitations' })).toBeVisible()
+  await expect(page.locator('.limits summary')).toBeVisible()
+  await page.locator('.limits summary').click()
+  await expect(page.locator('.limits p')).toBeVisible()
   await expect(page.locator('#panel')).toContainText('assumptions')
   await expect(page.locator('#donate-wrap')).toBeHidden() // DONATE_URL is empty
   await page.keyboard.press('Tab')

@@ -32,7 +32,9 @@ maplibregl.setWorkerUrl(workerUrl)
 const areaId = new URLSearchParams(location.search).get('area') ?? 'bgc'
 const area = (areas as unknown as Record<string, Area>)[areaId] ?? (areas as unknown as Record<string, Area>).bgc
 const MAX_SNAP_M = 250
-const OPACITY = [0.95, 0.55, 0.3] // 5, 10, 15 min
+// 5, 10, 15 min: inner band bold and opaque, outer band thin and faint so they read apart
+const OPACITY = [1, 0.6, 0.28]
+const WIDTH = [3.4, 2, 1.1]
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 $('area-name').textContent = area.name
@@ -98,7 +100,7 @@ function setupLayers() {
         source: `reach-${p.id}`,
         filter: ['==', ['get', 'band'], BAND_MINUTES[bi]],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': p.color, 'line-width': 2.6, 'line-offset': offset, 'line-opacity': OPACITY[bi] },
+        paint: { 'line-color': p.color, 'line-width': WIDTH[bi], 'line-offset': offset, 'line-opacity': OPACITY[bi] },
       })
     })
   })
@@ -134,7 +136,7 @@ function render() {
   }
   const on = Object.entries(c).filter(([k, v]) => v && k !== 'rainAvoidUncovered').length
   explain.textContent =
-    `In 15 minutes from here, compared with a fit adult on a dry, flat day (100% of the streets): ${parts.join(', ')}.` +
+    `Share of the streets a fit adult reaches in 15 min on a dry, flat day: ${parts.join(', ')}.` +
     (on ? '' : ' Turn on conditions to see who is hit hardest.')
   marker.setLngLat([graph.lon[node], graph.lat[node]])
 }
