@@ -36,14 +36,9 @@ No API keys, no paid services. Everything runs in the browser; the street graph 
 | Elderly person | 0.9 m/s | Heat ×1.5, slope ×1.5; needs lifts |
 | Newcomer | 1.33 m/s × 0.85 | Wayfinding penalty: 15% slower plus 8 s at every junction with 3 or more ways |
 
-Sources behind the defaults (rounded; these are population averages, not individual limits):
+**All of these numbers are assumptions.** They are rounded, plausible values chosen by the author, they are population averages rather than individual limits, and none is backed by a source with a verified URL. Earlier drafts named papers from memory; those citations were removed because they were not verified. Treat the figures as illustrative and change them in `PERSONAS` if you have better data.
 
-- Adult comfortable walking speed ~1.3–1.4 m/s: Bohannon, *Age and Ageing* 1997 (comfortable gait speed); the US Manual on Uniform Traffic Control Devices uses 1.2 m/s (3.5–4 ft/s) as a conservative design speed.
-- Elderly ~0.9–1.0 m/s and below 0.8 m/s for people with mobility limits: Bohannon & Andrews 2011 (normative gait speed meta-analysis).
-- Children ~1.0–1.2 m/s depending on age in pedestrian-safety literature; the low end is used because the map assumes walking *with* a younger child. No single source is cited for this value.
-- Pregnancy: late-pregnancy gait studies report slower walking, in the order of 10–15% below non-pregnant; 1.1 m/s is used. No single source is cited for this value.
-- Heat and rain multipliers and wayfinding penalties have no single citable value; they are **assumptions** chosen to be plausible and visible, and are easy to change.
-- Tobler's hiking function: Tobler, W. (1993), *Three presentations on geographical analysis and modeling*, NCGIA Technical Report 93-1.
+The slope penalty uses Tobler's hiking function (Tobler 1993, NCGIA Technical Report 93-1), applied to urban walking as an assumption; see Limitations.
 
 These references were written from memory and not re-checked against the papers in this build: verify before quoting them.
 

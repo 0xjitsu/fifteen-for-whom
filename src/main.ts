@@ -68,7 +68,17 @@ map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-ri
 
 let graph: Graph | null = null
 let origin: [number, number] = area.start
-let marker: maplibregl.Marker | null = null
+const pinEl = document.createElement('div')
+pinEl.className = 'pin'
+pinEl.dataset.testid = 'pin'
+// the pin is on the map from the start, at the default start point
+const marker = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLngLat(origin).addTo(map)
+// hide the loading state once the base map has drawn its first frame
+map.once('idle', () => { $('loading').hidden = true })
+map.on('error', (ev) => {
+  console.error('map error', ev.error)
+  $('loading').textContent = 'The map could not load. Check your connection and reload.'
+})
 const emptyFC = { type: 'FeatureCollection' as const, features: [] }
 
 function setupLayers() {
@@ -121,7 +131,7 @@ function render() {
   explain.textContent =
     `In 15 minutes from here, compared with a fit adult on a dry, flat day (100% of the streets): ${parts.join(', ')}.` +
     (on ? '' : ' Turn on conditions to see who is hit hardest.')
-  marker?.setLngLat([graph.lon[node], graph.lat[node]])
+  marker.setLngLat([graph.lon[node], graph.lat[node]])
 }
 
 function pairs(flat: number[]): [number, number][] {
@@ -132,8 +142,8 @@ function pairs(flat: number[]): [number, number][] {
 
 map.on('load', async () => {
   setupLayers()
-  marker = new maplibregl.Marker({ color: '#14202b' }).setLngLat(origin).addTo(map)
-  const res = await fetch(area.graph)
+  ;(window as unknown as { __map: maplibregl.Map }).__map = map
+    const res = await fetch(area.graph)
   graph = buildGraph((await res.json()) as RawGraph)
   render()
 })
@@ -145,8 +155,10 @@ map.on('click', (e: maplibregl.MapMouseEvent) => {
 })
 
 for (const id of ['c-heat', 'c-rain', 'c-avoid', 'c-slopes', 'c-lifts']) $(id).addEventListener('change', render)
-$('c-avoid').addEventListener('change', () => {
-  if ($<HTMLInputElement>('c-avoid').checked) $<HTMLInputElement>('c-rain').checked = true
+$('c-rain').addEventListener('change', () => {
+  const on = $<HTMLInputElement>('c-rain').checked
+  $<HTMLInputElement>('c-avoid').disabled = !on
+  if (!on) $<HTMLInputElement>('c-avoid').checked = false
   render()
 })
 legend.addEventListener('change', (ev) => {

@@ -71,6 +71,9 @@ export interface Persona {
   junctionPenalty: number
 }
 
+// ASSUMPTION: every speed, sensitivity and penalty below is an assumption chosen by the
+// author, not a measured or cited value. They are rough averages for illustration; real
+// people vary a lot. No source is claimed. Change them in one place, here.
 export const PERSONAS: Persona[] = [
   { id: 'child', name: 'Child', color: '#f2a93b', speed: 1.0, heatSens: 1.2, slopeSens: 1.0, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
   { id: 'pregnant', name: 'Pregnant woman', color: '#e0457b', speed: 1.1, heatSens: 1.4, slopeSens: 1.3, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
@@ -179,7 +182,7 @@ export function snap(g: Graph, lon: number, lat: number): { node: number; metres
   return { node: best, metres: Math.sqrt(bd) }
 }
 
-/** Tobler's hiking function, relative to flat ground (1 = flat speed). */
+/** Tobler's hiking function (Tobler 1993, hiking speeds; applied here to urban walking as an ASSUMPTION), relative to flat ground (1 = flat speed). */
 export function toblerFactor(grade: number): number {
   const flat = Math.exp(-3.5 * 0.05)
   return Math.min(1, Math.exp(-3.5 * Math.abs(grade + 0.05)) / flat)
@@ -204,6 +207,7 @@ export function edgeCosts(g: Graph, p: Persona, c: Conditions): EdgeCosts {
       continue
     }
     let mult = p.wayfindingFactor
+    // ASSUMPTION (all factors in this function): not from a cited source.
     if (steps) mult *= 0.5 // climbing stairs is slow for everyone
     if (c.heat) mult *= 1 - (covered ? 0.06 : 0.18) * p.heatSens
     if (c.rain) {
