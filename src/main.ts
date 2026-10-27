@@ -2,6 +2,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
 import areas from './areas.json'
+import { DONATE_URL } from './config'
 import {
   BAND_MINUTES,
   PERSONAS,
@@ -30,6 +31,10 @@ const OPACITY = [0.95, 0.55, 0.3] // 5, 10, 15 min
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 $('area-name').textContent = area.name
+if (DONATE_URL) {
+  $<HTMLAnchorElement>('donate').href = DONATE_URL
+  $('donate-wrap').hidden = false
+}
 
 const visible = new Set(PERSONAS.map((p) => p.id))
 const cond = (): Conditions => ({

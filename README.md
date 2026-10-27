@@ -106,7 +106,7 @@ The head tags in `index.html` use absolute `https://fifteen-for-whom.vercel.app`
 
 ## Support
 
-Free to use. If it helps you, consider a donation: [Sponsor 0xjitsu](https://github.com/sponsors/0xjitsu) <!-- TODO: placeholder until the donation account is chosen -->
+Free to use. A Donate link appears in the footer once `DONATE_URL` in `src/config.ts` is set (empty by default).
 
 ## License
 
