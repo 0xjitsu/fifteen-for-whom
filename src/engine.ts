@@ -81,10 +81,10 @@ export interface Persona {
 // ASSUMPTION (not backed by sources yet): heatSens and heat factors, slopeSens and Tobler on city
 // streets, stairs x0.5, rain-avoid detour x0.55. Change them in one place, here.
 export const PERSONAS: Persona[] = [
-  { id: 'child', name: 'Child', color: '#f2a93b', speed: 1.0, heatSens: 1.2, slopeSens: 1.0, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
+  { id: 'child', name: 'Young child (2–6)', color: '#f2a93b', speed: 1.0, heatSens: 1.2, slopeSens: 1.0, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
   { id: 'pregnant', name: 'Pregnant woman', color: '#e0457b', speed: 1.1, heatSens: 1.4, slopeSens: 1.3, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
   { id: 'elderly', name: 'Elderly person', color: '#7b61ff', speed: 0.9, heatSens: 1.5, slopeSens: 1.5, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
-  { id: 'newcomer', name: 'Newcomer', color: '#14a3a8', speed: 1.33, heatSens: 1.0, slopeSens: 1.0, needsLift: false, wayfindingFactor: 0.79, junctionPenalty: 0 },
+  { id: 'newcomer', name: 'Newcomer (proxy)', color: '#14a3a8', speed: 1.33, heatSens: 1.0, slopeSens: 1.0, needsLift: false, wayfindingFactor: 0.79, junctionPenalty: 0 },
 ]
 
 /** Reference: fit adult, no conditions. Not drawn, only used for comparison. */
