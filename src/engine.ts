@@ -71,14 +71,20 @@ export interface Persona {
   junctionPenalty: number
 }
 
-// ASSUMPTION: every speed, sensitivity and penalty below is an assumption chosen by the
-// author, not a measured or cited value. They are rough averages for illustration; real
-// people vary a lot. No source is claimed. Change them in one place, here.
+// SOURCES (base speeds on flat ground; open-access where possible):
+// - Fit adult 1.33 m/s: TCRP 112/NCHRP 562 (2006); Melnikov 2021, Singapore mean 1.34 m/s.
+// - Child 1.0 m/s: Rygelova et al. 2023, PLoS ONE, doi:10.1371/journal.pone.0285558 (ages 2-6).
+// - Pregnant 1.1 m/s: Branco et al. 2013, doi:10.1155/2013/718095; Yoo et al. 2015, doi:10.1589/jpts.27.279.
+// - Elderly 0.9 m/s: TCRP 112/NCHRP 562 Table 18 (60+, 15th pct 0.92); Studenski et al. 2011, JAMA, mean 0.92.
+// - Newcomer: PROXY. Qin et al. 2002, doi:10.11361/journalcpij.37.25: foreigners wayfinding in Osaka walked
+//   at 0.79x locals' speed, stops included, so there is no separate junction penalty.
+// ASSUMPTION (not backed by sources yet): heatSens and heat factors, slopeSens and Tobler on city
+// streets, stairs x0.5, rain-avoid detour x0.55. Change them in one place, here.
 export const PERSONAS: Persona[] = [
-  { id: 'child', name: 'Child', color: '#f2a93b', speed: 1.0, heatSens: 1.2, slopeSens: 1.0, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
+  { id: 'child', name: 'Young child (2–6)', color: '#f2a93b', speed: 1.0, heatSens: 1.2, slopeSens: 1.0, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
   { id: 'pregnant', name: 'Pregnant woman', color: '#e0457b', speed: 1.1, heatSens: 1.4, slopeSens: 1.3, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
   { id: 'elderly', name: 'Elderly person', color: '#7b61ff', speed: 0.9, heatSens: 1.5, slopeSens: 1.5, needsLift: true, wayfindingFactor: 1, junctionPenalty: 0 },
-  { id: 'newcomer', name: 'Newcomer', color: '#14a3a8', speed: 1.33, heatSens: 1.0, slopeSens: 1.0, needsLift: false, wayfindingFactor: 0.85, junctionPenalty: 8 },
+  { id: 'newcomer', name: 'Newcomer (proxy)', color: '#14a3a8', speed: 1.33, heatSens: 1.0, slopeSens: 1.0, needsLift: false, wayfindingFactor: 0.79, junctionPenalty: 0 },
 ]
 
 /** Reference: fit adult, no conditions. Not drawn, only used for comparison. */
