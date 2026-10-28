@@ -1,0 +1,10 @@
+{
+  "bgc": {
+    "name": "BGC, Taguig (Metro Manila)",
+    "center": [121.0509, 14.5496],
+    "zoom": 15.2,
+    "bbox": [121.039, 14.537, 121.063, 14.56],
+    "graph": "/data/bgc.json",
+    "start": [121.0516, 14.5507]
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>15 minutes, but for whom?</title>
+    <meta name="description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 5, 10 and 15 minutes? A free civic map, starting with BGC, Taguig." />
+    <meta name="theme-color" content="#14202b" />
+    <link rel="canonical" href="https://fifteen-for-whom.vercel.app/" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%2314a3a8'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='2.5'/%3E%3C/svg%3E" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="15 minutes, but for whom?" />
+    <meta property="og:url" content="https://fifteen-for-whom.vercel.app/" />
+    <meta property="og:title" content="15 minutes, but for whom?" />
+    <meta property="og:description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 15 minutes? Click a point in BGC and see." />
+    <meta property="og:image" content="https://fifteen-for-whom.vercel.app/og/preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Walking isochrones growing for a child, a pregnant woman, an elderly person and a newcomer in BGC" />
+    <meta property="og:video" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta property="og:video:secure_url" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1200" />
+    <meta property="og:video:height" content="630" />
+
+    <meta name="twitter:card" content="player" />
+    <meta name="twitter:title" content="15 minutes, but for whom?" />
+    <meta name="twitter:description" content="How far can a child, a pregnant woman, an elderly person or a newcomer really walk in 15 minutes?" />
+    <meta name="twitter:image" content="https://fifteen-for-whom.vercel.app/og/preview.png" />
+    <meta name="twitter:player" content="https://fifteen-for-whom.vercel.app/og/player.html" />
+    <meta name="twitter:player:width" content="1200" />
+    <meta name="twitter:player:height" content="630" />
+    <meta name="twitter:player:stream" content="https://fifteen-for-whom.vercel.app/og/preview.mp4" />
+    <meta name="twitter:player:stream:content_type" content="video/mp4" />
+  </head>
+  <body>
+    <div id="map" aria-label="Map of walking reach"></div>
+    <div id="loading" role="status">Loading map…</div>
+    <aside id="panel">
+      <header>
+        <h1>15 minutes, but for whom?</h1>
+        <p class="sub" id="area-name"></p>
+      </header>
+      <p id="hint" class="hint">Tap or click anywhere on the map to start from there.</p>
+      <p id="explain" class="explain" aria-live="polite"></p>
+
+      <section aria-label="Who is walking">
+        <h2>Who is walking</h2>
+        <ul id="legend" class="legend"></ul>
+        <div class="bands" aria-label="Ring key">
+          <svg width="64" height="14" viewBox="0 0 64 14" aria-hidden="true"><line x1="2" y1="2" x2="62" y2="2" stroke="#14202b" stroke-width="3.4" stroke-opacity="1" stroke-linecap="round"/><line x1="2" y1="7" x2="62" y2="7" stroke="#14202b" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/><line x1="2" y1="12" x2="62" y2="12" stroke="#14202b" stroke-width="1.1" stroke-opacity="0.28" stroke-linecap="round"/></svg>
+          <span>5 / 10 / 15 min (boldest to faintest)</span>
+        </div>
+      </section>
+
+      <section aria-label="Conditions">
+        <h2>Conditions</h2>
+        <label><input type="checkbox" id="c-heat" /> Hot day</label>
+        <label><input type="checkbox" id="c-rain" /> Rain</label>
+        <label class="sub-opt"><input type="checkbox" id="c-avoid" disabled /> Avoid uncovered streets</label>
+        <label><input type="checkbox" id="c-slopes" /> Hills and ramps</label>
+        <label><input type="checkbox" id="c-lifts" /> Broken lifts (no stairs or footbridges)</label>
+      </section>
+
+      <details class="limits">
+        <summary>Limitations</summary>
+        <p>Speeds and penalties for each person are <b>assumptions</b>, not measured or cited values, and real people vary. Results are averages. The hills and ramps penalty is a placeholder: BGC is almost flat, so it barely changes anything. Covered walkways are under-mapped in OpenStreetMap, so rain and heat effects are approximate.</p>
+      </details>
+
+      <footer>
+        <span>MIT licensed</span> ·
+        <span>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a></span> ·
+        <span>Tiles <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © OpenMapTiles</span> ·
+        <span id="donate-wrap" hidden><a id="donate" target="_blank" rel="noopener">Donate</a> · </span>
+        <a href="https://github.com/0xjitsu/fifteen-for-whom" target="_blank" rel="noopener">Source &amp; method</a>
+      </footer>
+    </aside>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

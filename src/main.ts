@@ -1,0 +1,180 @@
+import * as maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
+import './style.css'
+import areas from './areas.json'
+import { DONATE_URL } from './config'
+import {
+  BAND_MINUTES,
+  PERSONAS,
+  adultBaseline,
+  buildGraph,
+  isochrones,
+  snap,
+  type Conditions,
+  type Graph,
+  type RawGraph,
+} from './engine'
+
+interface Area {
+  name: string
+  center: [number, number]
+  zoom: number
+  bbox: [number, number, number, number]
+  graph: string
+  start: [number, number]
+}
+
+// MapLibre 6 resolves its worker relative to the bundled chunk, which breaks after Vite
+// bundling ("Worker failed to load"). Point it at the worker file as a hashed static asset.
+maplibregl.setWorkerUrl(workerUrl)
+
+const areaId = new URLSearchParams(location.search).get('area') ?? 'bgc'
+const area = (areas as unknown as Record<string, Area>)[areaId] ?? (areas as unknown as Record<string, Area>).bgc
+const MAX_SNAP_M = 250
+// 5, 10, 15 min: inner band bold and opaque, outer band thin and faint so they read apart
+const OPACITY = [1, 0.6, 0.28]
+const WIDTH = [3.4, 2, 1.1]
+
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
+$('area-name').textContent = area.name
+if (DONATE_URL) {
+  $<HTMLAnchorElement>('donate').href = DONATE_URL
+  $('donate-wrap').hidden = false
+}
+
+const visible = new Set(PERSONAS.map((p) => p.id))
+const cond = (): Conditions => ({
+  heat: $<HTMLInputElement>('c-heat').checked,
+  rain: $<HTMLInputElement>('c-rain').checked,
+  rainAvoidUncovered: $<HTMLInputElement>('c-avoid').checked,
+  slopes: $<HTMLInputElement>('c-slopes').checked,
+  brokenLifts: $<HTMLInputElement>('c-lifts').checked,
+})
+
+// legend
+const legend = $('legend')
+for (const p of PERSONAS) {
+  const li = document.createElement('li')
+  li.innerHTML = `<label><input type="checkbox" checked data-p="${p.id}" /><span class="swatch" style="background:${p.color}"></span>${p.name}</label><span class="km" id="km-${p.id}"></span>`
+  legend.appendChild(li)
+}
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://tiles.openfreemap.org/styles/positron',
+  center: area.center,
+  zoom: area.zoom,
+  maxBounds: [
+    [area.bbox[0] - 0.05, area.bbox[1] - 0.05],
+    [area.bbox[2] + 0.05, area.bbox[3] + 0.05],
+  ],
+  attributionControl: { compact: true, customAttribution: '© OpenStreetMap contributors' },
+})
+map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+
+let graph: Graph | null = null
+let origin: [number, number] = area.start
+const pinEl = document.createElement('div')
+pinEl.className = 'pin'
+pinEl.dataset.testid = 'pin'
+// the pin is on the map from the start, at the default start point
+const marker = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLngLat(origin).addTo(map)
+// hide the loading state once the base map has drawn its first frame
+map.once('idle', () => { $('loading').hidden = true })
+map.on('error', (ev) => {
+  console.error('map error', ev.error)
+  if (!map.loaded()) $('loading').textContent = 'The map could not load. Check your connection and reload.'
+})
+const emptyFC = { type: 'FeatureCollection' as const, features: [] }
+
+function setupLayers() {
+  PERSONAS.forEach((p, pi) => {
+    map.addSource(`reach-${p.id}`, { type: 'geojson', data: emptyFC })
+    const offset = (pi - (PERSONAS.length - 1) / 2) * 2.6
+    // draw 15 min first so shorter bands sit on top
+    ;[2, 1, 0].forEach((bi) => {
+      map.addLayer({
+        id: `reach-${p.id}-${BAND_MINUTES[bi]}`,
+        type: 'line',
+        source: `reach-${p.id}`,
+        filter: ['==', ['get', 'band'], BAND_MINUTES[bi]],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': p.color, 'line-width': WIDTH[bi], 'line-offset': offset, 'line-opacity': OPACITY[bi] },
+      })
+    })
+  })
+}
+
+function render() {
+  if (!graph) return
+  const { node, metres } = snap(graph, origin[0], origin[1])
+  const explain = $('explain')
+  if (metres > MAX_SNAP_M) {
+    explain.textContent = 'No walkable street near that point. Try a spot closer to a street or path.'
+    return
+  }
+  const c = cond()
+  const results = isochrones(graph, node, PERSONAS, c)
+  const base = adultBaseline(graph, node)
+  const last = BAND_MINUTES.length - 1
+  const parts: string[] = []
+  for (const r of results) {
+    const src = map.getSource(`reach-${r.persona.id}`) as maplibregl.GeoJSONSource | undefined
+    src?.setData({
+      type: 'FeatureCollection',
+      features: BAND_MINUTES.map((band, bi) => ({
+        type: 'Feature',
+        properties: { band },
+        geometry: { type: 'MultiLineString', coordinates: r.reach.lines[bi].map(pairs) },
+      })),
+    })
+    const m = r.reach.metres[last]
+    const pct = base > 0 ? Math.round((100 * m) / base) : 0
+    $(`km-${r.persona.id}`).textContent = `${pct}%`
+    parts.push(`${r.persona.name.toLowerCase()} ${pct}%`)
+  }
+  const on = Object.entries(c).filter(([k, v]) => v && k !== 'rainAvoidUncovered').length
+  explain.textContent =
+    `Share of the streets a fit adult reaches in 15 min on a dry, flat day: ${parts.join(', ')}.` +
+    (on ? '' : ' Turn on conditions to see who is hit hardest.')
+  marker.setLngLat([graph.lon[node], graph.lat[node]])
+}
+
+function pairs(flat: number[]): [number, number][] {
+  const out: [number, number][] = []
+  for (let i = 0; i < flat.length; i += 2) out.push([flat[i], flat[i + 1]])
+  return out
+}
+
+map.on('load', async () => {
+  setupLayers()
+  ;(window as unknown as { __map: maplibregl.Map }).__map = map
+    const res = await fetch(area.graph)
+  graph = buildGraph((await res.json()) as RawGraph)
+  render()
+})
+
+map.on('click', (e: maplibregl.MapMouseEvent) => {
+  origin = [e.lngLat.lng, e.lngLat.lat]
+  $('hint').style.display = 'none'
+  render()
+})
+
+for (const id of ['c-heat', 'c-rain', 'c-avoid', 'c-slopes', 'c-lifts']) $(id).addEventListener('change', render)
+$('c-rain').addEventListener('change', () => {
+  const on = $<HTMLInputElement>('c-rain').checked
+  $<HTMLInputElement>('c-avoid').disabled = !on
+  if (!on) $<HTMLInputElement>('c-avoid').checked = false
+  render()
+})
+legend.addEventListener('change', (ev) => {
+  const t = ev.target as HTMLInputElement
+  const id = t.dataset.p
+  if (!id) return
+  if (t.checked) visible.add(id)
+  else visible.delete(id)
+  for (const band of BAND_MINUTES) {
+    map.setLayoutProperty(`reach-${id}-${band}`, 'visibility', t.checked ? 'visible' : 'none')
+  }
+})
